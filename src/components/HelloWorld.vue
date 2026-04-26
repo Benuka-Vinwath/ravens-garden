@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <header class="bg-black main-h-screen">
+  <header class="min-h-screen bg-gray-100">
   </header>
 </template>
