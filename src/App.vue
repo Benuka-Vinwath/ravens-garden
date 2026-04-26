@@ -4,7 +4,7 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <div class="bg-white">
+  <div class="bg-black">
     <NavBar />
     <HelloWorld />
   </div>
