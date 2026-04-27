@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import NavBar from '../components/NavBar.vue'
+import FooterBar from '../components/Footer.vue'
 import heroImage from '../assets/hero-images/Home.png'
 import heroImageDark from '../assets/hero-images/Home-dark.png'
 import plant01 from '../assets/plants/plant-01.png'
 import plant02 from '../assets/plants/plant-02.png'
 import plant03 from '../assets/plants/plant-03.png'
+
 const isDark = ref(document.documentElement.classList.contains('dark'))
 
 const observer = new MutationObserver(() => {
@@ -17,8 +19,8 @@ onUnmounted(() => observer.disconnect())
 
 const plants = [
   { id: 1, name: 'Grass Ball Plant', price: 'Rs 2000.00', tag: 'Popular', image: plant01 },
-  { id: 2, name: 'Bonsai Pine Tree', price: 'Rs 3100.00', tag: 'New', image: plant02 },
-  { id: 3, name: 'ZZ Plant', price: 'Rs 2500.00', tag: 'Sale', image: plant03 },
+  { id: 2, name: 'Bonsai Pine Tree', price: 'Rs 3100.00', tag: 'New',     image: plant02 },
+  { id: 3, name: 'ZZ Plant',         price: 'Rs 2500.00', tag: 'Sale',    image: plant03 },
 ]
 </script>
 
@@ -184,23 +186,22 @@ const plants = [
             </button>
 
             <!-- Plant image area -->
-            <!-- Plant image area -->
-                <div
-                  class="h-52 flex items-center justify-center relative overflow-hidden"
-                  :style="isDark
-                    ? 'background:linear-gradient(135deg,rgba(23,79,42,0.28) 0%,rgba(18,26,20,0.4) 100%);'
-                    : 'background:linear-gradient(135deg,rgba(200,230,208,0.45) 0%,rgba(232,244,235,0.3) 100%);'"
-                >
-                  <img
-                    :src="plant.image"
-                    :alt="plant.name"
-                    class="h-44 w-auto object-contain transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 drop-shadow-lg"
-                  />
-                  <div
-                    class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style="background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.04) 100%);"
-                  />
-                </div>
+            <div
+              class="h-52 flex items-center justify-center relative overflow-hidden"
+              :style="isDark
+                ? 'background:linear-gradient(135deg,rgba(23,79,42,0.28) 0%,rgba(18,26,20,0.4) 100%);'
+                : 'background:linear-gradient(135deg,rgba(200,230,208,0.45) 0%,rgba(232,244,235,0.3) 100%);'"
+            >
+              <img
+                :src="plant.image"
+                :alt="plant.name"
+                class="h-44 w-auto object-contain transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 drop-shadow-lg"
+              />
+              <div
+                class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style="background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.04) 100%);"
+              />
+            </div>
 
             <!-- Divider -->
             <div :style="isDark ? 'margin:0 1.25rem;height:1px;background:rgba(255,255,255,0.06);' : 'margin:0 1.25rem;height:1px;background:rgba(23,79,42,0.07);'" />
@@ -255,33 +256,27 @@ const plants = [
           <!-- Decorative plant cluster -->
           <div class="flex-1 flex items-center justify-center relative min-h-64">
             <div
-              class="absolute w-56 h-56 rounded-full opacity-8 pointer-events-none"
-              :style="isDark ? 'background:#174f2a;opacity:0.08;' : 'background:#174f2a;opacity:0.06;'"
+              class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none"
+              :style="isDark ? 'background:#4caf72;' : 'background:#174f2a;'"
             />
-            <div class="relative flex items-end justify-center gap-3">
+            <div class="relative flex items-end justify-center gap-4">
               <div
-                class="w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
+                class="w-28 h-28 rounded-full flex items-center justify-center shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105"
                 :style="isDark ? 'background:#1e3524;' : 'background:#d4e8d4;'"
               >
-                <svg class="w-14 h-14" :class="isDark ? 'text-[#4caf72]' : 'text-[#174f2a]'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 22V12m0 0C12 7 7 4 3 6c0 4 3 7 9 6zm0 0c0-5 5-8 9-6-1 4-4 7-9 6z" />
-                </svg>
+                <img src="../assets/plants/plant-01.png" alt="Plant 01" class="w-24 h-24 object-contain drop-shadow-md" />
               </div>
               <div
-                class="w-20 h-20 rounded-full flex items-center justify-center shadow-lg -mb-2"
+                class="w-24 h-24 rounded-full flex items-center justify-center shadow-lg overflow-hidden -mb-3 transition-transform duration-300 hover:scale-105"
                 :style="isDark ? 'background:#1a2e1f;' : 'background:#c8e0c8;'"
               >
-                <svg class="w-11 h-11" :class="isDark ? 'text-[#4caf72]' : 'text-[#2d7a4f]'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 22V12m0 0C12 7 7 4 3 6c0 4 3 7 9 6zm0 0c0-5 5-8 9-6-1 4-4 7-9 6z" />
-                </svg>
+                <img src="../assets/plants/plant-02.png" alt="Plant 02" class="w-20 h-20 object-contain drop-shadow-md" />
               </div>
               <div
-                class="w-28 h-28 rounded-full flex items-center justify-center shadow-lg"
+                class="w-32 h-32 rounded-full flex items-center justify-center shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105"
                 :style="isDark ? 'background:#1e3524;' : 'background:#daeeda;'"
               >
-                <svg class="w-16 h-16" :class="isDark ? 'text-[#4caf72]' : 'text-[#174f2a]'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 22V12m0 0C12 7 7 4 3 6c0 4 3 7 9 6zm0 0c0-5 5-8 9-6-1 4-4 7-9 6z" />
-                </svg>
+                <img src="../assets/plants/plant-03.png" alt="Plant 03" class="w-28 h-28 object-contain drop-shadow-md" />
               </div>
             </div>
           </div>
@@ -303,6 +298,9 @@ const plants = [
         </div>
       </div>
     </section>
+
+    <!-- ───── FOOTER ───── -->
+    <FooterBar />
 
   </div>
 </template>
