@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col bg-[#f9faf9]">
     <NavBar />
 
-    <main class="flex-grow container mx-auto px-4 py-12 max-w-3xl">
+    <main class="flex-grow container mx-auto px-4 pt-32 pb-12 max-w-3xl">
       <h1 class="text-3xl font-bold text-green-900 mb-8">Check out</h1>
 
       <div class="space-y-6">
@@ -95,14 +95,73 @@
           
           <textarea rows="3" placeholder="Add special instructions for the restaurant or driver..." class="w-full bg-gray-100 border border-transparent rounded-lg px-4 py-3 focus:bg-white focus:border-[#1b6b50] focus:ring-1 focus:ring-[#1b6b50] outline-none resize-none transition-all"></textarea>
         </section>
+
+        <!-- Submit Button -->
+        <div class="mt-8 flex justify-end">
+          <button @click="showSuccessModal = true" class="px-8 py-4 bg-[#1b6b50] text-white rounded-xl font-bold text-lg hover:bg-green-900 transition-colors shadow-lg w-full md:w-auto">
+            Pay Now
+          </button>
+        </div>
       </div>
     </main>
+
+    <!-- Payment Success Modal -->
+    <div v-if="showSuccessModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="bg-white rounded-3xl w-full max-w-md p-8 relative shadow-2xl">
+        <!-- Close Button -->
+        <button @click="showSuccessModal = false" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        
+        <div class="text-center">
+          <!-- Success Icon -->
+          <div class="mx-auto w-24 h-24 bg-[#1b6b50]/20 rounded-full flex items-center justify-center mb-6">
+            <div class="w-16 h-16 bg-[#1b6b50] rounded-full flex items-center justify-center shadow-lg shadow-[#1b6b50]/40">
+              <svg class="w-8 h-8 text-white relative" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+          </div>
+          
+          <h2 class="text-2xl font-bold text-[#1b6b50] mb-2 font-sans tracking-tight">Payment Successful</h2>
+          <p class="text-[15px] text-gray-700 mb-1">Your order has been placed successfully.</p>
+          <p class="text-[15px] text-gray-700 mb-8">Thank you for choosing <span class="text-[#1b6b50] font-bold">Raven's Garden</span></p>
+
+          <!-- Order Details Card -->
+          <div class="bg-[#f9faf9] rounded-2xl p-5 mb-8 text-left space-y-4 shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center border-b border-gray-200 pb-4">
+              <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Order ID</span>
+              <span class="font-bold text-[#1b2b3a] text-sm">#YG12345</span>
+            </div>
+            <div class="flex justify-between items-center pt-1">
+              <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Estimated Arrival</span>
+              <span class="font-bold text-[#a66a2c] flex items-center gap-1.5 text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                20-25 minutes
+              </span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="space-y-4 pb-2">
+            <button class="w-full py-4 bg-[#1b6b50] hover:bg-green-900 text-white rounded-3xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg shadow-[#1b6b50]/20 tracking-wide text-sm">
+              Track Your Order
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            </button>
+            <router-link :to="{ name: 'home' }" class="w-full py-4 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-800 rounded-3xl font-bold block transition-colors tracking-wide text-sm">
+              Back to Home
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import NavBar from '../components/NavBar.vue'
 import Footer from '../components/Footer.vue'
+
+const showSuccessModal = ref(false)
 </script>
