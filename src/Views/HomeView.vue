@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
 import FooterBar from '../components/Footer.vue'
 import heroImage from '../assets/hero-images/Home.png'
 import heroImageDark from '../assets/hero-images/Home-dark.png'
 import plant01 from '../assets/plants/plant-01.png'
-import plant02 from '../assets/plants/plant-02.png'
 import plant03 from '../assets/plants/plant-03.png'
+import plant04 from '../assets/plants/plant-04.png'
+import { blogPosts } from '../data/blogPosts'
 
 const isDark = ref(document.documentElement.classList.contains('dark'))
+const router = useRouter()
 
 const observer = new MutationObserver(() => {
   isDark.value = document.documentElement.classList.contains('dark')
@@ -19,9 +22,34 @@ onUnmounted(() => observer.disconnect())
 
 const plants = [
   { id: 1, name: 'Grass Ball Plant', price: 'Rs 2000.00', tag: 'Popular', image: plant01 },
-  { id: 2, name: 'Bonsai Pine Tree', price: 'Rs 3100.00', tag: 'New',     image: plant02 },
+  { id: 2, name: 'Bonsai Pine Tree', price: 'Rs 3100.00', tag: 'New',     image: plant04 },
   { id: 3, name: 'ZZ Plant',         price: 'Rs 2500.00', tag: 'Sale',    image: plant03 },
 ]
+
+const goToProducts = (): void => {
+  router.push('/products')
+}
+
+const goToProductDetail = (id: number): void => {
+  router.push(`/products/${id}`)
+}
+
+const goToLogin = (): void => {
+  router.push('/login')
+}
+
+const goToBlog = (): void => {
+  router.push('/blog')
+}
+
+const scrollToBlog = (): void => {
+  const section = document.getElementById('blog-section')
+  if (section) section.scrollIntoView({ behavior: 'smooth' })
+}
+
+const goToBlogPost = (id: string): void => {
+  router.push(`/blog/post/${id}`)
+}
 </script>
 
 <template>
@@ -32,7 +60,7 @@ const plants = [
     <NavBar />
 
     <!-- ───── HERO SECTION ───── -->
-    <section class="relative min-h-screen flex items-center overflow-hidden">
+    <section class="relative min-h-[90vh] sm:min-h-screen flex items-center overflow-hidden">
       <div class="absolute inset-0">
         <img
           :src="isDark ? heroImageDark : heroImage"
@@ -47,7 +75,7 @@ const plants = [
         />
       </div>
 
-      <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-28 pb-16 w-full">
+      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 pt-24 sm:pt-28 pb-12 sm:pb-16 w-full">
         <div class="max-w-lg">
           <div
             class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border"
@@ -60,9 +88,9 @@ const plants = [
           </div>
 
           <h1
-            class="text-5xl sm:text-6xl font-bold leading-tight mb-6 transition-colors duration-300"
+            class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 transition-colors duration-300"
             :style="isDark ? 'color:#f0f0f0;' : 'color:#1a2e1f;'"
-            style="font-family:'Georgia',serif;letter-spacing:-0.02em;"
+            style="font-family:'Montserrat',sans-serif;letter-spacing:-0.02em;"
           >
             Make Your Space<br />
             <span :class="isDark ? 'text-[#4caf72]' : 'text-[#174f2a]'">Greener</span><br />
@@ -76,14 +104,16 @@ const plants = [
             Plan, grow, and manage your garden effortlessly with our Garden Planner.
           </p>
 
-          <div class="flex items-center gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center items-start gap-3 sm:gap-4">
             <button
               class="px-7 py-3.5 rounded-xl text-white text-sm font-semibold tracking-wide transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
               :class="isDark ? 'bg-[#1e6334] hover:bg-[#25753e]' : 'bg-[#174f2a] hover:bg-[#1e6334]'"
+              @click="goToProducts"
             >Shop Plants &amp; Tools</button>
             <button
               class="flex items-center gap-2 text-sm font-medium hover:gap-3 transition-all duration-200"
               :class="isDark ? 'text-[#4caf72]' : 'text-[#174f2a]'"
+              @click="scrollToBlog"
             >
               Learn more
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,29 +121,12 @@ const plants = [
               </svg>
             </button>
           </div>
-
-          <div class="flex items-center gap-8 mt-14">
-            <div>
-              <p class="text-2xl font-bold" :style="isDark ? 'color:#f0f0f0;' : 'color:#1a2e1f;'" style="font-family:'Georgia',serif">500+</p>
-              <p class="text-xs mt-0.5" :style="isDark ? 'color:#6b7280;' : 'color:#9ca3af;'">Plant varieties</p>
-            </div>
-            <div :style="isDark ? 'width:1px;height:2rem;background:rgba(255,255,255,0.1);' : 'width:1px;height:2rem;background:#e5e7eb;'" />
-            <div>
-              <p class="text-2xl font-bold" :style="isDark ? 'color:#f0f0f0;' : 'color:#1a2e1f;'" style="font-family:'Georgia',serif">12k+</p>
-              <p class="text-xs mt-0.5" :style="isDark ? 'color:#6b7280;' : 'color:#9ca3af;'">Happy gardeners</p>
-            </div>
-            <div :style="isDark ? 'width:1px;height:2rem;background:rgba(255,255,255,0.1);' : 'width:1px;height:2rem;background:#e5e7eb;'" />
-            <div>
-              <p class="text-2xl font-bold" :style="isDark ? 'color:#f0f0f0;' : 'color:#1a2e1f;'" style="font-family:'Georgia',serif">4.9★</p>
-              <p class="text-xs mt-0.5" :style="isDark ? 'color:#6b7280;' : 'color:#9ca3af;'">Average rating</p>
-            </div>
-          </div>
         </div>
       </div>
 
       <!-- Floating card -->
       <div
-        class="absolute bottom-16 right-8 lg:right-24 z-10 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl"
+        class="hidden sm:flex absolute bottom-10 sm:bottom-16 right-4 sm:right-8 lg:right-24 z-10 items-center gap-3 px-4 py-3 rounded-2xl shadow-xl"
         :style="isDark
           ? 'background:rgba(18,26,20,0.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);'
           : 'background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.9);'"
@@ -135,7 +148,7 @@ const plants = [
 
     <!-- ───── BEST SELLING SECTION ───── -->
     <section
-      class="py-20 px-6 sm:px-10 lg:px-16 transition-colors duration-500"
+      class="py-14 sm:py-20 px-4 sm:px-10 lg:px-16 transition-colors duration-500"
       :style="isDark ? 'background-color:#121a14;' : 'background-color:#ffffff;'"
     >
       <div class="max-w-7xl mx-auto">
@@ -143,7 +156,7 @@ const plants = [
           <h2
             class="text-3xl sm:text-4xl font-bold mb-3"
             :style="isDark ? 'color:#f0f0f0;' : 'color:#174f2a;'"
-            style="font-family:'Georgia',serif"
+            style="font-family:'Montserrat',sans-serif"
           >Best Selling Plant Collection</h2>
           <p class="text-sm" :style="isDark ? 'color:#9ca3af;' : 'color:#6b7280;'">
             Check out our collection. We got every plant you need!
@@ -162,6 +175,7 @@ const plants = [
             :style="isDark
               ? 'background:rgba(26,46,31,0.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 8px 32px rgba(0,0,0,0.35);'
               : 'background:rgba(255,255,255,0.7);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,0.9);box-shadow:0 8px 32px rgba(23,79,42,0.07);'"
+            @click="goToProductDetail(plant.id)"
           >
             <!-- Tag badge -->
             <div class="absolute top-4 left-4 z-10">
@@ -179,6 +193,7 @@ const plants = [
               :style="isDark
                 ? 'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(8px);'
                 : 'background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(8px);'"
+              @click.stop="goToLogin"
             >
               <svg class="w-4 h-4" :style="isDark ? 'color:rgba(255,255,255,0.5);' : 'color:#9ca3af;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -228,6 +243,7 @@ const plants = [
                   : 'background:#174f2a;box-shadow:0 4px 15px rgba(23,79,42,0.18);'"
                 @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(30,99,52,0.88)' : '#1e6334'"
                 @mouseleave="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(23,79,42,0.75)' : '#174f2a'"
+                @click.stop="goToProductDetail(plant.id)"
               >Buy Now</button>
             </div>
           </div>
@@ -240,21 +256,101 @@ const plants = [
             :style="isDark
               ? 'background:rgba(23,79,42,0.18);color:#4caf72;border:1px solid rgba(76,175,114,0.22);backdrop-filter:blur(8px);'
               : 'background:rgba(255,255,255,0.7);color:#174f2a;border:1px solid rgba(23,79,42,0.18);backdrop-filter:blur(8px);'"
+            @click="goToProducts"
           >View All Plants →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── BLOG SECTION ───── -->
+    <section
+      id="blog-section"
+      class="py-14 sm:py-20 px-4 sm:px-10 lg:px-16 transition-colors duration-500"
+      :style="isDark ? 'background-color:#121a14;' : 'background-color:#ffffff;'"
+    >
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end items-start justify-between gap-4 mb-12">
+          <div>
+            <p class="text-xs font-semibold tracking-widest uppercase mb-3" :class="isDark ? 'text-[#4caf72]' : 'text-[#174f2a]'">
+              Our Blog
+            </p>
+            <h2
+              class="text-3xl sm:text-4xl font-bold"
+              :style="isDark ? 'color:#f0f0f0;' : 'color:#174f2a;'"
+              style="font-family:'Montserrat',sans-serif"
+            >
+              Latest Gardening Stories
+            </h2>
+          </div>
+          <button
+            class="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5"
+            :style="isDark
+              ? 'background:rgba(23,79,42,0.18);color:#4caf72;border:1px solid rgba(76,175,114,0.22);backdrop-filter:blur(8px);'
+              : 'background:rgba(255,255,255,0.7);color:#174f2a;border:1px solid rgba(23,79,42,0.18);backdrop-filter:blur(8px);'"
+            @click="goToBlog"
+          >
+            View All Articles
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <article
+            v-for="post in blogPosts"
+            :key="post.id"
+            class="group rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+            :style="isDark
+              ? 'background:rgba(26,46,31,0.55);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 28px rgba(0,0,0,0.28);'
+              : 'background:rgba(255,255,255,0.72);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.95);box-shadow:0 8px 28px rgba(23,79,42,0.09);'"
+          >
+            <div
+              class="h-36 px-6 py-5 flex flex-col justify-between"
+              :style="isDark
+                ? 'background:linear-gradient(135deg,rgba(23,79,42,0.35) 0%,rgba(18,26,20,0.45) 100%);'
+                : 'background:linear-gradient(135deg,rgba(200,230,208,0.55) 0%,rgba(232,244,235,0.4) 100%);'"
+            >
+              <span
+                class="w-fit px-2.5 py-1 rounded-full text-xs font-semibold"
+                :style="isDark
+                  ? 'background:rgba(23,79,42,0.55);color:#4caf72;border:1px solid rgba(76,175,114,0.25);'
+                  : 'background:rgba(23,79,42,0.1);color:#174f2a;border:1px solid rgba(23,79,42,0.18);'"
+              >
+                {{ post.category.charAt(0).toUpperCase() + post.category.slice(1) }}
+              </span>
+              <p class="text-xs" :style="isDark ? 'color:#9ca3af;' : 'color:#4b5563;'">{{ post.readTime }}</p>
+            </div>
+            <div class="px-6 py-6">
+              <h3 class="text-lg font-semibold mb-3 leading-snug" :style="isDark ? 'color:#f0f0f0;' : 'color:#1a2e1f;'">
+                {{ post.title }}
+              </h3>
+              <p class="text-sm leading-relaxed mb-5" :style="isDark ? 'color:#9ca3af;' : 'color:#6b7280;'">
+                {{ post.excerpt }}
+              </p>
+              <button
+                class="text-sm font-semibold inline-flex items-center gap-2 group-hover:gap-3 transition-all duration-200"
+                :class="isDark ? 'text-[#4caf72]' : 'text-[#174f2a]'"
+                @click="goToBlogPost(post.id)"
+              >
+                Read Article
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </button>
+            </div>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- ───── START GARDENING CTA ───── -->
     <section
-      class="py-20 px-6 sm:px-10 lg:px-16 transition-colors duration-500"
+      class="py-14 sm:py-20 px-4 sm:px-10 lg:px-16 transition-colors duration-500"
       :style="isDark ? 'background-color:#0e1610;' : 'background-color:#f8f7f2;'"
     >
       <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row items-center gap-12">
+        <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
 
           <!-- Decorative plant cluster -->
-          <div class="flex-1 flex items-center justify-center relative min-h-64">
+          <div class="flex-1 flex items-center justify-center relative min-h-56 sm:min-h-64">
             <div
               class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none"
               :style="isDark ? 'background:#4caf72;' : 'background:#174f2a;'"
@@ -285,7 +381,7 @@ const plants = [
           <div class="flex-1 max-w-lg">
             <h2
               class="text-3xl sm:text-4xl font-bold leading-tight mb-6"
-              :style="isDark ? 'color:#f0f0f0;font-family:Georgia,serif;' : 'color:#174f2a;font-family:Georgia,serif;'"
+              :style="isDark ? 'color:#f0f0f0;font-family:Montserrat,sans-serif;' : 'color:#174f2a;font-family:Montserrat,sans-serif;'"
             >Start Gardening &amp; Grow Your Own Plant!</h2>
             <p class="text-sm leading-relaxed mb-8" :style="isDark ? 'color:#9ca3af;' : 'color:#6b7280;'">
               Discover the joy of growing your own plants. From seeds to blooms, we have everything you need to get started on your gardening journey.
@@ -293,6 +389,7 @@ const plants = [
             <button
               class="px-8 py-3.5 rounded-xl text-white text-sm font-semibold tracking-wide transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
               :class="isDark ? 'bg-[#1e6334] hover:bg-[#25753e]' : 'bg-[#174f2a] hover:bg-[#1e6334]'"
+              @click="goToProducts"
             >Shop Plants</button>
           </div>
         </div>

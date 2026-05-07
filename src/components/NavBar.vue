@@ -1,32 +1,55 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, watch, nextTick } from 'vue'
 import logo from '../assets/logo.png'
 import logoDark from '../assets/logo-dark.png'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useCart } from '../composables/useCart'
+import { useAuth } from '../composables/useAuth'
 const router = useRouter()
+const route = useRoute()
+const { itemCount } = useCart()
+const { authUser, logout } = useAuth()
 
 const isMenuOpen = ref(false)
 const activeDropdown = ref<string | null>(null)
-const isDark = ref(false)
+const isDark = ref(document.documentElement.classList.contains('dark'))
 let closeTimer: ReturnType<typeof setTimeout> | null = null
+const desktopSearch = ref('')
+const mobileSearch = ref('')
 
-const navItems = [
+interface NavDropdownLink {
+  label: string
+  href: string
+}
+
+interface NavItem {
+  label: string
+  href: string
+  dropdown: NavDropdownLink[] | null
+  /** If set, clicking scrolls to this footer section instead of routing */
+  footerAnchor?: string
+}
+
+const navItems: NavItem[] = [
   { label: 'Home', href: '/', dropdown: null },
   {
-    label: 'Plants', href: '/plants',
+    label: 'Plants', href: '/products',
     dropdown: [
-      { label: 'Indoor Plants', href: '/plants/indoor' },
-      { label: 'Outdoor Plants', href: '/plants/outdoor' },
-      { label: 'Succulents', href: '/plants/succulents' },
-      { label: 'Herbs & Edibles', href: '/plants/herbs' },
+      { label: 'Indoor Plants', href: '/products?category=indoor' },
+      { label: 'Outdoor Plants', href: '/products?category=outdoor' },
+      { label: 'Succulents', href: '/products?category=succulents' },
+      { label: 'Herbs & Edibles', href: '/products?category=herbs' },
+      { label: 'Flowering Plants', href: '/products?category=flowering' },
     ],
   },
   {
     label: 'Tools', href: '/tools',
     dropdown: [
-      { label: 'Hand Tools', href: '/tools/hand' },
-      { label: 'Watering & Irrigation', href: '/tools/watering' },
-      { label: 'Soil & Fertilizers', href: '/tools/soil' },
+      { label: 'Hand Tools', href: '/tools?category=hand-tools' },
+      { label: 'Watering & Irrigation', href: '/tools?category=watering' },
+      { label: 'Soil & Fertilizers', href: '/tools?category=soil' },
+      { label: 'Pots & Planters', href: '/tools?category=pots' },
+      { label: 'Plant Care Accessories', href: '/tools?category=care' },
     ],
   },
   {
@@ -37,13 +60,51 @@ const navItems = [
       { label: 'Seasonal Advice', href: '/blog/seasonal' },
     ],
   },
-  { label: 'About', href: '/about', dropdown: null },
-  { label: 'Contact', href: '/contact', dropdown: null },
+  { label: 'About', href: '/about', dropdown: null, footerAnchor: 'footer-about' },
+  { label: 'Contact', href: '/contact', dropdown: null, footerAnchor: 'footer-contact' },
 ]
 
 function openDropdown(label: string) {
   if (closeTimer) clearTimeout(closeTimer)
   activeDropdown.value = label
+}
+
+function isItemActive(item: NavItem): boolean {
+  if (item.footerAnchor) return route.hash === `#${item.footerAnchor}`
+  if (item.href === '/') return route.path === '/'
+  return route.path === item.href || route.path.startsWith(`${item.href}/`)
+}
+
+const scrollToFooterSection = (elementId: string): void => {
+  document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+const handleNavClick = async (item: NavItem): Promise<void> => {
+  if (item.dropdown) {
+    openDropdown(item.label)
+    return
+  }
+  if (item.footerAnchor) {
+    activeDropdown.value = null
+    isMenuOpen.value = false
+
+    if (document.getElementById(item.footerAnchor)) {
+      scrollToFooterSection(item.footerAnchor)
+      await router.replace({
+        path: route.path,
+        query: route.query,
+        hash: `#${item.footerAnchor}`,
+      })
+      return
+    }
+
+    await router.push({ path: '/', hash: `#${item.footerAnchor}` })
+    await nextTick()
+    setTimeout(() => scrollToFooterSection(item.footerAnchor!), 200)
+    return
+  }
+
+  router.push(item.href)
 }
 
 function scheduleClose() {
@@ -57,7 +118,38 @@ function cancelClose() {
 function toggleDark() {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
+  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
 }
+
+const goToCart = (): void => {
+  router.push('/cart')
+}
+
+const handleAuthAction = (): void => {
+  if (!authUser.value) {
+    router.push('/login')
+    return
+  }
+  logout()
+  router.push('/')
+}
+
+const submitSearch = (rawQuery: string): void => {
+  const query = rawQuery.trim()
+  router.push({
+    path: '/products',
+    query: query ? { q: query } : {},
+  })
+}
+
+const syncSearchFromRoute = (): void => {
+  const query = typeof route.query.q === 'string' ? route.query.q : ''
+  desktopSearch.value = query
+  mobileSearch.value = query
+}
+
+syncSearchFromRoute()
+watch(() => route.query.q, syncSearchFromRoute)
 
 onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
 </script>
@@ -86,7 +178,7 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
           <img
             :src="isDark ? logoDark : logo"
             alt="Raven's Garden Logo"
-            class="w-32 sm:w-36 h-auto object-contain transition-all duration-300 hover:scale-105 hover:drop-shadow-lg hover:brightness-110 cursor-pointer"
+            class="w-28 sm:w-32 lg:w-36 h-auto object-contain transition-all duration-300 hover:scale-105 hover:drop-shadow-lg hover:brightness-110 cursor-pointer"
           />
         </a>
 
@@ -102,7 +194,7 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
             <button
               class="relative flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-medium transition-all duration-250 group"
               :style="
-                activeDropdown === item.label
+                activeDropdown === item.label || isItemActive(item)
                   ? {
                       background: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(23,79,42,0.15)',
                       color: isDark ? '#ffffff' : '#174f2a',
@@ -110,6 +202,7 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
                   : {}
               "
               :class="isDark ? 'text-white/80 hover:text-white' : 'text-gray-800 hover:text-[#174f2a]'"
+              @click="item.dropdown ? openDropdown(item.label) : handleNavClick(item)"
               @mouseover="(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.background = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(23,79,42,0.1)'
@@ -148,11 +241,11 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
                 v-if="item.dropdown && activeDropdown === item.label"
                 class="absolute top-full left-0 mt-2 w-52 rounded-2xl overflow-hidden"
                 :style="{
-                  background: isDark ? 'rgba(10,25,15,0.6)' : 'rgba(255,255,255,0.35)',
-                  backdropFilter: 'blur(20px) saturate(180%)',
-                  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                  border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.5)',
-                  boxShadow: '0 16px 40px rgba(0,0,0,0.15)',
+                  background: isDark ? 'rgba(8,20,12,0.82)' : 'rgba(255,255,255,0.72)',
+                  backdropFilter: 'blur(22px) saturate(170%)',
+                  WebkitBackdropFilter: 'blur(22px) saturate(170%)',
+                  border: isDark ? '1px solid rgba(255,255,255,0.16)' : '1px solid rgba(23,79,42,0.18)',
+                  boxShadow: isDark ? '0 18px 44px rgba(0,0,0,0.35)' : '0 18px 44px rgba(23,79,42,0.2)',
                 }"
                 @mouseenter="cancelClose"
                 @mouseleave="scheduleClose"
@@ -163,9 +256,9 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
                     :key="sub.label"
                     :href="sub.href"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 group/sub"
-                    :class="isDark ? 'text-white/75 hover:text-white' : 'text-gray-700 hover:text-[#174f2a]'"
+                    :class="isDark ? 'text-white/85 hover:text-white' : 'text-gray-800 hover:text-[#174f2a]'"
                     :style="{ transition: 'background 0.15s' }"
-                    @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(23,79,42,0.1)'"
+                    @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.14)' : 'rgba(23,79,42,0.14)'"
                     @mouseleave="(e) => (e.currentTarget as HTMLElement).style.background = ''"
                   >
                     <span
@@ -192,11 +285,17 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
               color: 'white',
             }"
             aria-label="Cart"
+            @click="goToCart"
           >
             <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+            <span
+              v-if="itemCount > 0"
+              class="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center"
+            >
+              {{ itemCount }}
+            </span>
           </button>
 
           <!-- Search -->
@@ -210,14 +309,17 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
           >
             <input
               type="text"
-              placeholder="Search plants..."
+              placeholder="Search plants & tools..."
               class="w-32 xl:w-44 px-3.5 outline-none bg-transparent text-sm"
               :class="isDark ? 'text-white placeholder-white/40' : 'text-gray-800 placeholder-gray-500'"
+              v-model="desktopSearch"
+              @keydown.enter="submitSearch(desktopSearch)"
             />
             <button
               class="h-full px-3.5 flex items-center justify-center transition-colors duration-200"
               :style="{ background: isDark ? 'rgba(23,79,42,0.7)' : 'rgba(23,79,42,0.85)', color: 'white' }"
               aria-label="Search"
+              @click="submitSearch(desktopSearch)"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -245,12 +347,12 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
             :class="isDark ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#174f2a]'"
             @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(23,79,42,0.08)'"
             @mouseleave="(e) => (e.currentTarget as HTMLElement).style.background = ''"
-            @click="router.push('/login')"
+            @click="handleAuthAction"
           >
             <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            Log in
+            <span class="max-w-[9rem] truncate">{{ authUser ? authUser.username : 'Log in' }}</span>
           </button>
 
           <!-- Dark mode toggle -->
@@ -301,7 +403,7 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
       >
         <div
           v-if="isMenuOpen"
-          class="md:hidden pb-4 border-t"
+          class="md:hidden pb-4 border-t max-h-[calc(100vh-5rem)] overflow-y-auto"
           :style="{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)' }"
         >
           <div class="flex flex-col pt-2 gap-0.5">
@@ -309,9 +411,14 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
               <button
                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
                 :class="isDark ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#174f2a]'"
+                :style="isItemActive(item)
+                  ? (isDark
+                      ? 'background:rgba(255,255,255,0.12);color:#ffffff;'
+                      : 'background:rgba(23,79,42,0.15);color:#174f2a;')
+                  : ''"
                 @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(23,79,42,0.08)'"
                 @mouseleave="(e) => (e.currentTarget as HTMLElement).style.background = ''"
-                @click="activeDropdown === item.label ? activeDropdown = null : activeDropdown = item.label"
+                @click="item.dropdown ? (activeDropdown === item.label ? activeDropdown = null : activeDropdown = item.label) : handleNavClick(item)"
               >
                 {{ item.label }}
                 <svg
@@ -329,7 +436,7 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
                 enter-from-class="opacity-0 -translate-y-1"
                 enter-to-class="opacity-100 translate-y-0"
               >
-                <div v-if="item.dropdown && activeDropdown === item.label" class="ml-4 mb-1 flex flex-col gap-0.5">
+                <div v-if="item.dropdown && activeDropdown === item.label" class="ml-4 mb-1 flex flex-col gap-0.5 pr-2">
                   <a
                     v-for="sub in item.dropdown"
                     :key="sub.label"
@@ -364,10 +471,13 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
                 placeholder="Search plants..."
                 class="flex-1 px-4 outline-none bg-transparent text-sm"
                 :class="isDark ? 'text-white placeholder-white/40' : 'text-gray-800 placeholder-gray-500'"
+                v-model="mobileSearch"
+                @keydown.enter="submitSearch(mobileSearch)"
               />
               <button
                 class="h-full px-4 text-white"
                 :style="{ background: 'rgba(23,79,42,0.85)' }"
+                @click="submitSearch(mobileSearch)"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -386,14 +496,14 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
             </button>
             <div class="flex items-center justify-between">
               <button
-                @click="router.push('/login')"
+                @click="handleAuthAction"
                 class="flex items-center gap-2 text-sm font-medium"
                 :class="isDark ? 'text-white/80' : 'text-gray-700'"
               >
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                Log in
+                <span class="max-w-[9rem] truncate">{{ authUser ? authUser.username : 'Log in' }}</span>
               </button>
               <button
                 class="flex items-center gap-2 text-sm font-medium transition-colors duration-200"

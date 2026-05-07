@@ -3,8 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
 import FooterBar from '../components/Footer.vue'
-import plant01 from '../assets/plants/plant-01.png'
-import plant02 from '../assets/plants/plant-02.png'
+import { useCart } from '../composables/useCart'
 
 const router = useRouter()
 
@@ -15,39 +14,11 @@ const observer = new MutationObserver(() => {
 onMounted(() => observer.observe(document.documentElement, { attributeFilter: ['class'] }))
 onUnmounted(() => observer.disconnect())
 
-// ── Cart items ─────────────────────────────────────────────────────────────
-interface CartItem {
-  id: number
-  name: string
-  price: number
-  quantity: number
-  image: string
-  tag?: string
-}
-
-const cartItems = ref<CartItem[]>([
-  { id: 1, name: 'Green Capsicum',  price: 14.00, quantity: 5, image: plant01, tag: 'Popular' },
-  { id: 2, name: 'Red Capsicum',    price: 14.00, quantity: 1, image: plant02, tag: 'New' },
-])
+const { cartItems, subtotal, updateQty, removeItem } = useCart()
 
 // ── Computed totals ────────────────────────────────────────────────────────
-const subtotal = computed(() =>
-  cartItems.value.reduce((sum, item) => sum + item.price * item.quantity, 0)
-)
 const shipping  = computed(() => subtotal.value > 50 ? 0 : 5.99)
 const total     = computed(() => subtotal.value + shipping.value)
-
-// ── Actions ────────────────────────────────────────────────────────────────
-const updateQty = (id: number, delta: number) => {
-  const item = cartItems.value.find(i => i.id === id)
-  if (item) {
-    item.quantity = Math.max(1, item.quantity + delta)
-  }
-}
-
-const removeItem = (id: number) => {
-  cartItems.value = cartItems.value.filter(i => i.id !== id)
-}
 
 const fmt = (n: number) => `$${n.toFixed(2)}`
 </script>
@@ -63,7 +34,7 @@ const fmt = (n: number) => `$${n.toFixed(2)}`
     <div class="pt-28 pb-6 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto">
       <h1
         class="text-3xl sm:text-4xl font-bold text-center"
-        style="font-family:'Georgia',serif;letter-spacing:-0.02em;"
+        style="font-family:'Montserrat',sans-serif;letter-spacing:-0.02em;"
         :style="isDark ? 'color:#f0f0f0;' : 'color:#174f2a;'"
       >My Shopping Cart</h1>
     </div>
@@ -258,7 +229,7 @@ const fmt = (n: number) => `$${n.toFixed(2)}`
             >
               <h2
                 class="text-base font-bold"
-                style="font-family:'Georgia',serif;"
+                style="font-family:'Montserrat',sans-serif;"
                 :style="isDark ? 'color:#f0f0f0;' : 'color:#174f2a;'"
               >Cart Total</h2>
             </div>
@@ -311,6 +282,7 @@ const fmt = (n: number) => `$${n.toFixed(2)}`
                 :style="isDark
                   ? 'box-shadow:0 4px 20px rgba(23,79,42,0.35);'
                   : 'box-shadow:0 4px 20px rgba(23,79,42,0.22);'"
+                @click="router.push('/checkout')"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -3,10 +3,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProductsView from '../views/ProductsView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
-import CartView from '../views/CartView.vue'
+import ToolsView from '../views/ToolsView.vue'
 import LoginView from '../views/LoginView.vue'
+import BlogView from '../views/BlogView.vue'
+import BlogPostView from '../views/BlogPostView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
-import cart from '../views/cart.vue'
+import CartPage from '../views/cart.vue'
+import CheckoutView from '../views/CheckoutView.vue'
 
 const routes = [
   {
@@ -25,14 +28,19 @@ const routes = [
     component: ProductDetailView
   },
   {
+    path: '/tools',
+    name: 'tools',
+    component: ToolsView
+  },
+  {
     path: '/cart',
     name: 'cart',
-    component: CartView
+    component: CartPage
   },
   {
     path: '/checkout',
     name: 'checkout',
-    component: CartView
+    component: CheckoutView
   },
   {
     path: '/login',
@@ -40,20 +48,35 @@ const routes = [
     component: LoginView
   },
   {
+    path: '/blog',
+    name: 'blog',
+    component: BlogView
+  },
+  {
+    path: '/blog/post/:id',
+    name: 'blog-post',
+    component: BlogPostView
+  },
+  {
+    path: '/blog/:category',
+    name: 'blog-category',
+    component: BlogView
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: NotFoundView
   },
-  {
-    path: '/cart',
-    name: 'cart',
-    component: cart
-  }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, _from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
+    return { top: 0, behavior: 'smooth' }
+  },
 })
 
 export default router

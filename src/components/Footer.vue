@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import logoDark from '../assets/logo-dark.png'
 import logoLight from '../assets/logo.png'
 
 const isDark = ref(document.documentElement.classList.contains('dark'))
+const router = useRouter()
+const route = useRoute()
 
 const observer = new MutationObserver(() => {
   isDark.value = document.documentElement.classList.contains('dark')
@@ -14,11 +17,75 @@ onUnmounted(() => observer.disconnect())
 
 const quickLinks = ['Home', 'Plants', 'Tools', 'Blog', 'About', 'Contact', 'Login']
 const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
+
+const goToTopOfPage = (path: string): void => {
+  if (route.path === path) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+  router.push({ path, hash: '' })
+}
+
+const scrollToFooterSection = (sectionId: string): void => {
+  const el = document.getElementById(sectionId)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    router.replace({ path: route.path, query: route.query, hash: `#${sectionId}` })
+    return
+  }
+
+  // If the current route doesn't render the footer yet, navigate to home first.
+  router.push({ path: '/', hash: `#${sectionId}` })
+  setTimeout(() => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, 250)
+}
+
+const handleFooterNav = (label: string): void => {
+  switch (label) {
+    case 'Home':
+      goToTopOfPage('/')
+      return
+    case 'Plants':
+      goToTopOfPage('/products')
+      return
+    case 'Tools':
+      goToTopOfPage('/tools')
+      return
+    case 'Blog':
+      goToTopOfPage('/blog')
+      return
+    case 'Login':
+      goToTopOfPage('/login')
+      return
+    default:
+      return
+  }
+}
+
+const handleAboutLinkNav = (label: string): void => {
+  switch (label) {
+    case 'Our Company':
+      scrollToFooterSection('footer-about')
+      return
+    case 'Product':
+    case 'How to buy':
+      router.push('/products')
+      return
+    case 'Privacy Policy':
+      // No dedicated privacy page yet; reuse Blog as a placeholder.
+      router.push('/blog')
+      return
+    default:
+      return
+  }
+}
 </script>
 
 <template>
   <footer
-    class="transition-colors duration-500"
+    id="site-footer"
+    class="scroll-mt-24 transition-colors duration-500"
     :style="isDark
       ? 'background-color:#0e1610;border-top:1px solid rgba(255,255,255,0.06);'
       : 'background-color:#142019;border-top:1px solid rgba(0,0,0,0.08);'"
@@ -106,6 +173,7 @@ const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
             <li v-for="link in quickLinks" :key="link">
               <a
                 href="#"
+                @click.prevent="handleFooterNav(link)"
                 class="text-sm transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-1.5 group"
                 :style="isDark ? 'color:#9ca3af;' : 'color:rgba(255,255,255,0.7);'"
               >
@@ -125,7 +193,7 @@ const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
         </div>
 
         <!-- ── Col 3: About Us ── -->
-        <div>
+        <div id="footer-about" class="scroll-mt-24">
           <h4
             class="text-sm font-bold tracking-widest uppercase mb-6"
             :style="isDark ? 'color:#f0f0f0;' : 'color:#ffffff;'"
@@ -134,6 +202,7 @@ const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
             <li v-for="link in aboutLinks" :key="link">
               <a
                 href="#"
+                @click.prevent="handleAboutLinkNav(link)"
                 class="text-sm transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-1.5 group"
                 :style="isDark ? 'color:#9ca3af;' : 'color:rgba(255,255,255,0.7);'"
               >
@@ -148,7 +217,7 @@ const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
         </div>
 
         <!-- ── Col 4: Contact ── -->
-        <div>
+        <div id="footer-contact" class="scroll-mt-24">
           <h4
             class="text-sm font-bold tracking-widest uppercase mb-6"
             :style="isDark ? 'color:#f0f0f0;' : 'color:#ffffff;'"
@@ -236,11 +305,21 @@ const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
         © 2026. All Rights Reserved.
       </p>
       <div class="flex items-center gap-4">
-        <a href="#" class="text-xs transition-colors duration-200"
-          :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.55);'">Privacy Policy</a>
+        <a
+          href="#"
+          @click.prevent="router.push('/blog')"
+          class="text-xs transition-colors duration-200"
+          :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.55);'"
+          >Privacy Policy</a
+        >
         <span :style="isDark ? 'color:#374151;' : 'color:rgba(255,255,255,0.2);'">·</span>
-        <a href="#" class="text-xs transition-colors duration-200"
-          :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.55);'">Terms of Service</a>
+        <a
+          href="#"
+          @click.prevent="router.push('/blog')"
+          class="text-xs transition-colors duration-200"
+          :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.55);'"
+          >Terms of Service</a
+        >
       </div>
     </div>
   </footer>

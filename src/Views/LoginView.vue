@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import loginImage from '../assets/Login-image.avif'
 import logo from '../assets/logo.png'
 import logoDark from '../assets/logo-dark.png'
+import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
+const { setAuthUser } = useAuth()
 
 const isDark = ref(document.documentElement.classList.contains('dark'))
 const observer = new MutationObserver(() => {
@@ -14,22 +16,23 @@ const observer = new MutationObserver(() => {
 onMounted(() => observer.observe(document.documentElement, { attributeFilter: ['class'] }))
 onUnmounted(() => observer.disconnect())
 
-const email    = ref('')
+const identifier = ref('')
 const password = ref('')
 const showPassword  = ref(false)
 const isLoading     = ref(false)
-const emailError    = ref('')
+const identifierError = ref('')
 const passwordError = ref('')
 const formFocused   = ref<string | null>(null)
+const submitError = ref('')
 
 // ── Computed input styles (avoids escaped quotes in template) ──────────────
-const emailInputStyle = computed(() => {
+const identifierInputStyle = computed(() => {
   const base = isDark.value
     ? 'background:rgba(255,255,255,0.05);color:#f0f0f0;'
     : 'background:#f3f7f4;color:#1a2e1f;'
 
-  if (emailError.value) return base + 'border:1.5px solid #ef4444;'
-  if (formFocused.value === 'email') {
+  if (identifierError.value) return base + 'border:1.5px solid #ef4444;'
+  if (formFocused.value === 'identifier') {
     return base + (isDark.value
       ? 'border:1.5px solid #4caf72;box-shadow:0 0 0 3px rgba(76,175,114,0.12);'
       : 'border:1.5px solid #174f2a;box-shadow:0 0 0 3px rgba(23,79,42,0.08);')
@@ -57,11 +60,12 @@ const passwordInputStyle = computed(() => {
 
 // ── Validation ─────────────────────────────────────────────────────────────
 const validate = () => {
-  emailError.value    = ''
+  identifierError.value = ''
   passwordError.value = ''
+  submitError.value = ''
   let valid = true
-  if (!email.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-    emailError.value = 'Please enter a valid email address'
+  if (!identifier.value.trim()) {
+    identifierError.value = 'Please enter your DummyJSON username'
     valid = false
   }
   if (!password.value || password.value.length < 6) {
@@ -74,9 +78,55 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
   isLoading.value = true
-  await new Promise(r => setTimeout(r, 1400))
-  isLoading.value = false
-  router.push('/')
+
+  try {
+    const response = await fetch('https://dummyjson.com/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: identifier.value.trim(),
+        password: password.value,
+        expiresInMins: 60,
+      }),
+    })
+
+    if (!response.ok) {
+      submitError.value = 'Invalid credentials. Try a DummyJSON test user.'
+      return
+    }
+
+    const data = (await response.json()) as {
+      id: number
+      username: string
+      firstName: string
+      lastName: string
+      email: string
+      accessToken?: string
+      token?: string
+    }
+
+    const token = data.accessToken ?? data.token
+    if (!token) {
+      submitError.value = 'Login succeeded but token was missing.'
+      return
+    }
+
+    setAuthUser({
+      id: data.id,
+      username: data.username,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      token,
+    })
+
+    router.push('/')
+  } catch (error) {
+    console.error(error)
+    submitError.value = 'Login failed. Please check your connection and try again.'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const goBack = () => router.back()
@@ -153,7 +203,7 @@ const goBack = () => router.back()
         <div class="mb-8">
           <h1
             class="text-3xl sm:text-[2rem] font-bold leading-tight mb-2"
-            style="font-family:'Georgia',serif;letter-spacing:-0.02em;"
+            style="font-family:'Montserrat',sans-serif;letter-spacing:-0.02em;"
             :style="isDark ? 'color:#f0f0f0;' : 'color:#174f2a;'"
           >
             Login to Raven's<br />Garden account
@@ -166,29 +216,29 @@ const goBack = () => router.back()
         <!-- Form -->
         <form class="flex flex-col gap-5 flex-1" @submit.prevent="handleSubmit">
 
-          <!-- Email -->
+          <!-- Username -->
           <div class="flex flex-col gap-1.5">
             <label
-              for="email"
+              for="identifier"
               class="text-xs font-semibold tracking-wide"
               :style="isDark ? 'color:#9ca3af;' : 'color:#374151;'"
-            >Email</label>
+            >DummyJSON Username</label>
             <input
-              id="email"
-              v-model="email"
-              type="email"
-              autocomplete="email"
-              placeholder="you@example.com"
+              id="identifier"
+              v-model="identifier"
+              type="text"
+              autocomplete="username"
+              placeholder="e.g. emilys"
               class="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-              :style="emailInputStyle"
-              @focus="formFocused = 'email'; emailError = ''"
+              :style="identifierInputStyle"
+              @focus="formFocused = 'identifier'; identifierError = ''"
               @blur="formFocused = null"
             />
-            <p v-if="emailError" class="text-xs text-red-400 flex items-center gap-1">
+            <p v-if="identifierError" class="text-xs text-red-400 flex items-center gap-1">
               <svg class="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              {{ emailError }}
+              {{ identifierError }}
             </p>
           </div>
 
@@ -243,6 +293,10 @@ const goBack = () => router.back()
               </button>
             </div>
           </div>
+
+          <p v-if="submitError" class="text-xs text-red-400">
+            {{ submitError }}
+          </p>
 
           <!-- Submit -->
           <button
