@@ -137,7 +137,7 @@ const handleAddToCart = (id: number) => {
 }
 
 const handleWishlist = (id: number) => console.log('Tool wishlist:', id)
-const handleViewDetail = (id: number) => console.log('Tool detail requested:', id)
+const handleViewDetail = (id: number) => router.push(`/tools/${id}`)
 
 onMounted(fetchTools)
 </script>

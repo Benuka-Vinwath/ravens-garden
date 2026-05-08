@@ -187,19 +187,6 @@ const goToBlogPost = (id: string): void => {
               >{{ plant.tag }}</span>
             </div>
 
-            <!-- Heart button -->
-            <button
-              class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
-              :style="isDark
-                ? 'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(8px);'
-                : 'background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(8px);'"
-              @click.stop="goToLogin"
-            >
-              <svg class="w-4 h-4" :style="isDark ? 'color:rgba(255,255,255,0.5);' : 'color:#9ca3af;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </button>
-
             <!-- Plant image area -->
             <div
               class="h-52 flex items-center justify-center relative overflow-hidden"

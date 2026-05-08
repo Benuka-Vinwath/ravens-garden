@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import ProductsView from '../views/ProductsView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
 import ToolsView from '../views/ToolsView.vue'
+import ToolDetailView from '../views/ToolDetailView.vue'
 import LoginView from '../views/LoginView.vue'
 import BlogView from '../views/BlogView.vue'
 import BlogPostView from '../views/BlogPostView.vue'
@@ -31,6 +32,11 @@ const routes = [
     path: '/tools',
     name: 'tools',
     component: ToolsView
+  },
+  {
+    path: '/tools/:id',
+    name: 'tool-detail',
+    component: ToolDetailView
   },
   {
     path: '/cart',
