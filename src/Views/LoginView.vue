@@ -95,7 +95,7 @@ const handleSubmit = async () => {
     }
 
     const data = (await response.json()) as {
-      id: number
+      id: string | number
       username: string
       firstName: string
       lastName: string

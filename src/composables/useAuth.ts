@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 
 export interface AuthUser {
-  id: number
+  id: string | number
   username: string
   firstName: string
   lastName: string
