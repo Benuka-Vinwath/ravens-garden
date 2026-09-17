@@ -238,10 +238,10 @@ const handleAboutLinkNav = (label: string): void => {
               <div>
                 <p class="text-xs mb-0.5" :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.5);'">Phone</p>
                 <a
-                  href="tel:+23144422"
+                  href="tel:+94770297974"
                   class="text-sm transition-colors duration-200"
                   :style="isDark ? 'color:#d1d5db;' : 'color:rgba(255,255,255,0.85);'"
-                >+23144422</a>
+                >+94770297974</a>
               </div>
             </li>
 
@@ -260,10 +260,10 @@ const handleAboutLinkNav = (label: string): void => {
               <div>
                 <p class="text-xs mb-0.5" :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.5);'">Email</p>
                 <a
-                  href="mailto:info@gardenxyz.com"
+                  href="mailto:ravensgarden@gmail.com"
                   class="text-sm transition-colors duration-200 break-all"
                   :style="isDark ? 'color:#d1d5db;' : 'color:rgba(255,255,255,0.85);'"
-                >info@gardenxyz.com</a>
+                >ravensgarden@gmail.com</a>
               </div>
             </li>
 
@@ -283,7 +283,7 @@ const handleAboutLinkNav = (label: string): void => {
               <div>
                 <p class="text-xs mb-0.5" :style="isDark ? 'color:#6b7280;' : 'color:rgba(255,255,255,0.5);'">Address</p>
                 <p class="text-sm leading-relaxed" :style="isDark ? 'color:#d1d5db;' : 'color:rgba(255,255,255,0.85);'">
-                  ABC, Main Boulevard,<br />Street ABC, State ABC.
+                  46/8 Thibbatugoda,<br />Ganemulla
                 </p>
               </div>
             </li>
