@@ -11,6 +11,7 @@ const { itemCount } = useCart()
 const { authUser, logout } = useAuth()
 
 const isMenuOpen = ref(false)
+const isAccountMenuOpen = ref(false)
 const activeDropdown = ref<string | null>(null)
 const isDark = ref(document.documentElement.classList.contains('dark'))
 let closeTimer: ReturnType<typeof setTimeout> | null = null
@@ -130,7 +131,14 @@ const handleAuthAction = (): void => {
     router.push('/login')
     return
   }
+
+  isAccountMenuOpen.value = !isAccountMenuOpen.value
+}
+
+const handleLogout = (): void => {
   logout()
+  isAccountMenuOpen.value = false
+  isMenuOpen.value = false
   router.push('/')
 }
 
@@ -150,6 +158,7 @@ const syncSearchFromRoute = (): void => {
 
 syncSearchFromRoute()
 watch(() => route.query.q, syncSearchFromRoute)
+watch(() => route.fullPath, () => { isAccountMenuOpen.value = false })
 
 onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
 </script>
@@ -327,20 +336,46 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
             </button>
           </div>
 
-          <!-- Log in -->
-          <button
-            
-            class="flex items-center gap-1.5 text-sm font-medium transition-all duration-200 px-3 py-1.5 rounded-xl"
-            :class="isDark ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#174f2a]'"
-            @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(23,79,42,0.08)'"
-            @mouseleave="(e) => (e.currentTarget as HTMLElement).style.background = ''"
-            @click="handleAuthAction"
-          >
-            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span class="max-w-[9rem] truncate">{{ authUser ? authUser.username : 'Log in' }}</span>
-          </button>
+          <!-- Account menu -->
+          <div class="relative">
+            <button
+              class="flex items-center gap-1.5 text-sm font-medium transition-all duration-200 px-3 py-1.5 rounded-xl"
+              :class="isDark ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#174f2a]'"
+              :aria-expanded="authUser ? isAccountMenuOpen : undefined"
+              @mouseover="(e) => (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(23,79,42,0.08)'"
+              @mouseleave="(e) => (e.currentTarget as HTMLElement).style.background = ''"
+              @click="handleAuthAction"
+            >
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span class="max-w-[9rem] truncate">{{ authUser ? authUser.username : 'Log in' }}</span>
+              <svg v-if="authUser" class="w-3 h-3 transition-transform" :class="{ 'rotate-180': isAccountMenuOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 scale-95 -translate-y-1"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 -translate-y-1"
+            >
+              <div v-if="authUser && isAccountMenuOpen" class="absolute right-0 top-full mt-2 p-1.5 rounded-xl bg-red-500/75 backdrop-blur-xl border border-red-200/30 shadow-lg shadow-red-950/25">
+                <button
+                  class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors hover:bg-red-950/20"
+                  @click="handleLogout"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m-3-3h9m0 0l-3-3m3 3l-3 3" />
+                  </svg>
+                  Log out
+                </button>
+              </div>
+            </Transition>
+          </div>
 
           <!-- Dark mode toggle -->
           <button
@@ -473,7 +508,7 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
             </div>
             <div class="flex items-center justify-between">
               <button
-                @click="handleAuthAction"
+                @click="authUser ? handleLogout() : handleAuthAction()"
                 class="flex items-center gap-2 text-sm font-medium"
                 :class="isDark ? 'text-white/80' : 'text-gray-700'"
               >
