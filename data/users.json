@@ -1,0 +1,12 @@
+[
+  {
+    "id": "0e1e1f5b-36fb-4393-8f3d-2f1e1fcb732e",
+    "firstName": "Benuka",
+    "lastName": "Mudalige",
+    "username": "Benuka",
+    "email": "benukavinwath123@gmail.com",
+    "passwordHash": "2d2a9fe4d230b1eb955d75d839107cca8391d28843bff225b755ddbf37320fe719992337a2849dbe910ab76bc422ae81155dbf9f8e35cb3fe1da9b35576a12a4",
+    "passwordSalt": "0a3fe386afc634ec11970fb67ea7ff28",
+    "createdAt": "2026-09-17T13:24:31.533Z"
+  }
+]

@@ -6,6 +6,7 @@ import ProductDetailView from '../views/ProductDetailView.vue'
 import ToolsView from '../views/ToolsView.vue'
 import ToolDetailView from '../views/ToolDetailView.vue'
 import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
 import BlogView from '../views/BlogView.vue'
 import BlogPostView from '../views/BlogPostView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
@@ -52,6 +53,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView
   },
   {
     path: '/blog',
