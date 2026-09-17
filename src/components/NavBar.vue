@@ -327,19 +327,6 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
             </button>
           </div>
 
-          <!-- Get Started -->
-          <button
-            class="px-5 h-9 rounded-full text-white text-sm font-semibold tracking-wide active:scale-95 transition-all duration-200"
-            :style="{
-              background: 'rgba(23,79,42,0.85)',
-              border: '1px solid rgba(255,255,255,0.25)',
-              backdropFilter: 'blur(8px)',
-              boxShadow: '0 4px 15px rgba(23,79,42,0.3)',
-            }"
-          >
-            Get Started
-          </button>
-
           <!-- Log in -->
           <button
             
@@ -484,16 +471,6 @@ onUnmounted(() => { if (closeTimer) clearTimeout(closeTimer) })
                 </svg>
               </button>
             </div>
-            <button
-              class="w-full h-10 rounded-full text-white text-sm font-semibold transition-all duration-200"
-              :style="{
-                background: 'rgba(23,79,42,0.85)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                boxShadow: '0 4px 15px rgba(23,79,42,0.3)',
-              }"
-            >
-              Get Started
-            </button>
             <div class="flex items-center justify-between">
               <button
                 @click="handleAuthAction"
