@@ -12,6 +12,7 @@ import BlogPostView from '../views/BlogPostView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import CartPage from '../views/cart.vue'
 import CheckoutView from '../views/CheckoutView.vue'
+import AboutView from '../views/AboutView.vue'
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/checkout',
     name: 'checkout',
     component: CheckoutView
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: AboutView,
   },
   {
     path: '/login',

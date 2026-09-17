@@ -26,21 +26,6 @@ const goToTopOfPage = (path: string): void => {
   router.push({ path, hash: '' })
 }
 
-const scrollToFooterSection = (sectionId: string): void => {
-  const el = document.getElementById(sectionId)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    router.replace({ path: route.path, query: route.query, hash: `#${sectionId}` })
-    return
-  }
-
-  // If the current route doesn't render the footer yet, navigate to home first.
-  router.push({ path: '/', hash: `#${sectionId}` })
-  setTimeout(() => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, 250)
-}
-
 const handleFooterNav = (label: string): void => {
   switch (label) {
     case 'Home':
@@ -55,6 +40,9 @@ const handleFooterNav = (label: string): void => {
     case 'Blog':
       goToTopOfPage('/blog')
       return
+    case 'About':
+      goToTopOfPage('/about')
+      return
     case 'Login':
       goToTopOfPage('/login')
       return
@@ -66,11 +54,11 @@ const handleFooterNav = (label: string): void => {
 const handleAboutLinkNav = (label: string): void => {
   switch (label) {
     case 'Our Company':
-      scrollToFooterSection('footer-about')
+      router.push('/about#our-story')
       return
     case 'Product':
     case 'How to buy':
-      router.push('/products')
+      router.push('/about#how-to-buy')
       return
     case 'Privacy Policy':
       // No dedicated privacy page yet; reuse Blog as a placeholder.

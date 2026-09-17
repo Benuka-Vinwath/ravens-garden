@@ -61,7 +61,7 @@ const navItems: NavItem[] = [
       { label: 'Seasonal Advice', href: '/blog/seasonal' },
     ],
   },
-  { label: 'About', href: '/about', dropdown: null, footerAnchor: 'footer-about' },
+  { label: 'About', href: '/about', dropdown: null },
   { label: 'Contact', href: '/contact', dropdown: null, footerAnchor: 'footer-contact' },
 ]
 
