@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
 import FooterBar from '../components/Footer.vue'
 import gardenImage from '../assets/Login-image.avif'
 
-const router = useRouter()
 const isDark = ref(document.documentElement.classList.contains('dark'))
 const observer = new MutationObserver(() => {
   isDark.value = document.documentElement.classList.contains('dark')
@@ -34,7 +32,6 @@ const values = [
             <p class="text-xs font-bold tracking-[0.24em] uppercase mb-5" :class="isDark ? 'text-[#76cf96]' : 'text-[#174f2a]'">About Raven's Garden</p>
             <h1 class="text-4xl sm:text-6xl font-bold leading-[1.08] mb-6" style="font-family:'Montserrat',sans-serif">A happier home starts with something green.</h1>
             <p class="text-base sm:text-lg leading-relaxed max-w-xl" :style="isDark ? 'color:#c6d0c8;' : 'color:#405347;'">We are a neighbourhood garden shop for curious beginners and lifelong plant lovers—here to make every growing space feel more alive.</p>
-            <button class="mt-8 px-6 py-3 rounded-xl text-sm font-bold text-white transition-transform hover:-translate-y-0.5" :style="isDark ? 'background:#2b8146;box-shadow:0 10px 28px rgba(0,0,0,.3);' : 'background:#174f2a;box-shadow:0 10px 28px rgba(23,79,42,.22);'" @click="router.push('/products')">Explore our collection</button>
           </div>
         </div>
       </section>
@@ -71,15 +68,6 @@ const values = [
               <h3 class="text-lg font-bold mb-3">{{ value.title }}</h3><p class="text-sm leading-relaxed" :style="isDark ? 'color:#b4c0b7;' : 'color:#55665a;'">{{ value.text }}</p>
             </article>
           </div>
-        </div>
-      </section>
-
-      <section id="how-to-buy" class="scroll-mt-24 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28">
-        <div class="text-center max-w-2xl mx-auto mb-12"><p class="text-xs font-bold tracking-[0.2em] uppercase mb-4" :class="isDark ? 'text-[#76cf96]' : 'text-[#174f2a]'">How to buy</p><h2 class="text-3xl sm:text-4xl font-bold" style="font-family:'Montserrat',sans-serif">Everything you need, in three easy steps.</h2></div>
-        <div class="grid md:grid-cols-3 gap-8 text-center">
-          <div><div class="w-12 h-12 mx-auto mb-5 rounded-full flex items-center justify-center font-bold" :style="isDark ? 'background:#1e6334;color:#fff;' : 'background:#174f2a;color:#fff;'">1</div><h3 class="font-bold mb-2">Browse</h3><p class="text-sm" :style="isDark ? 'color:#b4c0b7;' : 'color:#55665a;'">Find plants and tools that suit your space.</p></div>
-          <div><div class="w-12 h-12 mx-auto mb-5 rounded-full flex items-center justify-center font-bold" :style="isDark ? 'background:#1e6334;color:#fff;' : 'background:#174f2a;color:#fff;'">2</div><h3 class="font-bold mb-2">Choose with care</h3><p class="text-sm" :style="isDark ? 'color:#b4c0b7;' : 'color:#55665a;'">Read useful details and add your favourites to cart.</p></div>
-          <div><div class="w-12 h-12 mx-auto mb-5 rounded-full flex items-center justify-center font-bold" :style="isDark ? 'background:#1e6334;color:#fff;' : 'background:#174f2a;color:#fff;'">3</div><h3 class="font-bold mb-2">Grow</h3><p class="text-sm" :style="isDark ? 'color:#b4c0b7;' : 'color:#55665a;'">Receive your order and enjoy a greener everyday.</p></div>
         </div>
       </section>
 

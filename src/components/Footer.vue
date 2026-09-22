@@ -16,7 +16,7 @@ onMounted(() => observer.observe(document.documentElement, { attributeFilter: ['
 onUnmounted(() => observer.disconnect())
 
 const quickLinks = ['Home', 'Plants', 'Tools', 'Blog', 'About', 'Contact', 'Login']
-const aboutLinks = ['Our Company', 'Privacy Policy', 'Product', 'How to buy']
+const aboutLinks = ['Our Company', 'Privacy Policy']
 
 const goToTopOfPage = (path: string): void => {
   if (route.path === path) {
@@ -55,10 +55,6 @@ const handleAboutLinkNav = (label: string): void => {
   switch (label) {
     case 'Our Company':
       router.push('/about#our-story')
-      return
-    case 'Product':
-    case 'How to buy':
-      router.push('/about#how-to-buy')
       return
     case 'Privacy Policy':
       // No dedicated privacy page yet; reuse Blog as a placeholder.
